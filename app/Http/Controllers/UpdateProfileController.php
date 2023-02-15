@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use http\Exception\RuntimeException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use RuntimeException;
+use Throwable;
 
 class UpdateProfileController extends Controller
 {
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): Response
     {
         $validated = $request->validate([
-            'name' => ['required']
+            'name' => ['required'],
         ]);
 
         $isUpdated = auth()->user()->update([
-            'name' => $validated['name']
+            'name' => $validated['name'],
         ]);
 
         throw_unless($isUpdated, RuntimeException::class);
