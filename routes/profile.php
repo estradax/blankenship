@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\UpdateProfileController;
+use App\Http\Controllers\Profile\UpdateProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::put('/update-profile', UpdateProfileController::class)
+Route::put('/profile/update', UpdateProfileController::class)
     ->middleware('auth')
-    ->name('updateProfile');
+    ->name('profile.update');
