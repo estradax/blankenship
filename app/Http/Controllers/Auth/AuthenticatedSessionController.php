@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Resources\ResponseResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -16,19 +16,21 @@ class AuthenticatedSessionController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(LoginRequest $request): Response
+    public function store(LoginRequest $request): ResponseResource
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return response()->noContent();
+        return ResponseResource::success([
+           'auth' => true
+        ]);
     }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request): ResponseResource
     {
         Auth::guard('web')->logout();
 
@@ -36,6 +38,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return response()->noContent();
+        return ResponseResource::success([
+            'logout' => true
+        ]);
     }
 }

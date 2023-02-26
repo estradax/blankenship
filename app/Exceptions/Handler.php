@@ -47,13 +47,13 @@ class Handler extends ExceptionHandler
     {
         $this->renderable(function (ValidationException $e, Request $request) {
             if ($request->ajax() && ! $request->is('api/*')) {
-                return ResponseResource::fromError('validation', $e);
+                return ResponseResource::error('validation', $e);
             }
         });
 
         $this->renderable(function (AuthenticationException $e, Request $request) {
             if ($request->ajax() && ! $request->is('api/*')) {
-                return ResponseResource::fromError('authentication', $e);
+                return ResponseResource::error('authentication', $e);
             }
         });
     }

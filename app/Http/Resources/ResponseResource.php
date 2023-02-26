@@ -9,20 +9,29 @@ use Throwable;
 
 class ResponseResource extends JsonResource
 {
+    private bool $isError;
     private Throwable $error;
     private string $error_type;
+    private mixed $data;
 
-    public static function fromError(string $type, Throwable $e): ResponseResource
-    {
-        return new ResponseResource($type, $e);
-    }
-
-    public function __construct(string $error_type, Throwable $error)
+    private function __construct(string $error_type, Throwable $error, mixed $data, bool $isError)
     {
         parent::__construct(null);
 
         $this->error = $error;
         $this->error_type = $error_type;
+        $this->data = $data;
+        $this->isError = $isError;
+    }
+
+    public static function error(string $type, Throwable $e): ResponseResource
+    {
+        return new ResponseResource($type, $e, null, true);
+    }
+
+    public static function success(mixed $data): ResponseResource
+    {
+        return new ResponseResource('', new \Exception(), $data, false);
     }
 
     /**
@@ -32,12 +41,19 @@ class ResponseResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        if ($this->isError) {
+            return [
+                'error' => [
+                '   type' => $this->error_type,
+                    'message' => $this->error->getMessage()
+                ],
+                'data' => null
+            ];
+        }
+
         return [
-            'error' => [
-                'type' => $this->error_type,
-                'message' => $this->error->getMessage()
-            ],
-            'data' => null
+            'error' => null,
+            'data' => $this->data
         ];
     }
 }
