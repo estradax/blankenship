@@ -2,7 +2,11 @@
 
 namespace App\Exceptions;
 
+use App\Http\Resources\ResponseResource;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -41,8 +45,16 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (ValidationException $e, Request $request) {
+            if ($request->ajax() && ! $request->is('api/*')) {
+                return ResponseResource::fromError('validation', $e);
+            }
+        });
+
+        $this->renderable(function (AuthenticationException $e, Request $request) {
+            if ($request->ajax() && ! $request->is('api/*')) {
+                return ResponseResource::fromError('authentication', $e);
+            }
         });
     }
 }
